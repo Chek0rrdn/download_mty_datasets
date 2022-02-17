@@ -1,0 +1,8 @@
+municipios:
+  monterrey:
+    pagina_base: http://portal.monterrey.gob.mx/ 
+    url: http://portal.monterrey.gob.mx/transparencia/Oficial/Index_Proveedores_Contratistas.asp
+    queries:
+      nombre_archivos: '.tabcontent li a'
+      descarga_archivos: '.tabcontent li a'
+      patron_regex: '^http://portal.monterrey.gob.mx/.+\.xlsx$'
