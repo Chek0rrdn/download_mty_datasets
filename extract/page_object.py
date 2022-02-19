@@ -42,26 +42,34 @@ class tr_Page(Page):
         super().__init__(uuid_municipio)
 
         self._pattern = self._config['queries']['patron_regex']
-        self._pagina = self._config['pagina_base']
+        self._page = self._config['pagina_base']
         
         self.__doc_names = None
         self.__links_docs = None
+        self.__years = None
 
         self.__datos()
+
 
 
     def __datos(self):
         doc_names = []
         well_formed_links = []
+        years = set()
+
         datos = self._select(self._queries['nombre_archivos'])
         
         for i in datos:
-            if re.search(self._pattern, urljoin(self._pagina, i['href'])):
+            if re.search(self._pattern, urljoin(self._page, i['href'])):
                 doc_names.append(i.get_text())
-                well_formed_links.append(urljoin(self._pagina, i['href']))
+                year = re.findall(r'\d{4,4}', i.get_text())
+                year = ''.join(year)
+                years.add(year)
+                well_formed_links.append(urljoin(self._page, i['href']))
         
         self.__doc_names = doc_names
         self.__links_docs = well_formed_links
+        self.__years = years
         
     
     @property
@@ -69,5 +77,9 @@ class tr_Page(Page):
         return self.__doc_names
 
     @property
-    def link_documentos(self):
+    def links_documentos(self):
         return self.__links_docs
+    
+    @property
+    def years(self):
+        return self.__years
