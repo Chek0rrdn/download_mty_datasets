@@ -1,14 +1,12 @@
 import logging
 import os
-import openpyxl
 import pathlib
+
 import pandas as pd
+from openpyxl import load_workbook
 
 from common import config
-from nltk.corpus import stopwords
-#   si es la primera vez ejecutando este programa, descomente y ejecute la siguiente 
-#   linea, una vez ejecutada, se puede volver a comentar:
-#   nltk.download('stopwords')
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def limpia_archivos_excel(excel_sucio_ruta):
-  xls = openpyxl.load_workbook(filename=excel_sucio_ruta)
+  xls = load_workbook(filename=excel_sucio_ruta)
   lista_de_hojas = xls.sheetnames
   df_limpio = pd.DataFrame()
 
@@ -27,12 +25,13 @@ def limpia_archivos_excel(excel_sucio_ruta):
         skiprows=5
     )
     df_provisional['SHEET'] = lista_de_hojas[i]
-    df_limpio = df_limpio.append(df_provisional, ignore_index=True)
+    df_limpio = df_limpio.append(df_provisional)
 
 
   df_limpio = df_limpio.dropna(how='any')
 
   return df_limpio
+
 
 
 def run():
@@ -53,10 +52,10 @@ def run():
       my_df = limpia_archivos_excel(
         excel_sucio_ruta= excel_path
       )
-      my_df.to_csv(year_path+'/'+i+'.csv')
-
-      # print(excel_path)
-      # print(year_path+'/'+i+'.csv')
+      my_df.to_csv(year_path+'/'+i+'.csv', index=False)
+      
+      if os.path.isfile(path=excel_path):
+        os.remove(path=excel_path)
 
 
 

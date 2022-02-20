@@ -1,6 +1,7 @@
 import bs4
 import re
 import requests
+
 from common import config
 from urllib.parse import urljoin
 
@@ -83,3 +84,4 @@ class tr_Page(Page):
     @property
     def years(self):
         return self.__years
+

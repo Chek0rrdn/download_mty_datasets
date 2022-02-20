@@ -1,11 +1,11 @@
 import logging
+import os
 import re
 import shutil
-import os
 import wget
 
-from common import *
 import page_object as po
+from common import *
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -42,7 +42,6 @@ def run():
                 out=f'./archivos-{city}/years/{document_year}/archivos/{i}.xlsx'
             )
         shutil.move(f'./archivos-{city}', '../transform/')
-        # shutil.copy(f'./archivos-{city}', '../transform/')
 
 
 if __name__ == '__main__':
