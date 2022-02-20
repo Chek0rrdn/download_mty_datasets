@@ -152,5 +152,8 @@ cython_debug/
 #.idea/
 
 *.xlsx
-*pptx
+*.csv
+*.ppt
+*.pptx
+*.doc
 *.docx

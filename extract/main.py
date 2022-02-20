@@ -1,5 +1,6 @@
 import logging
 import re
+import shutil
 import os
 import wget
 
@@ -40,7 +41,8 @@ def run():
                 url=j,
                 out=f'./archivos-{city}/years/{document_year}/archivos/{i}.xlsx'
             )
-
+        shutil.move(f'./archivos-{city}', '../transform/')
+        # shutil.copy(f'./archivos-{city}', '../transform/')
 
 
 if __name__ == '__main__':
