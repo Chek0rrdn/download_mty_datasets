@@ -5,7 +5,7 @@ import pathlib
 import pandas as pd
 from openpyxl import load_workbook
 
-from common import config
+from common import *
 
 
 logging.basicConfig(level=logging.INFO)
@@ -13,49 +13,53 @@ logger = logging.getLogger(__name__)
 
 
 
-def limpia_archivos_excel(excel_sucio_ruta):
+def clean_excel_files(excel_sucio_ruta):
+
   xls = load_workbook(filename=excel_sucio_ruta)
-  lista_de_hojas = xls.sheetnames
-  df_limpio = pd.DataFrame()
+  sheet_list = xls.sheetnames
+  df_ordered = pd.DataFrame()
 
-  for i in range(1, len(lista_de_hojas)):
-    df_provisional = pd.read_excel(
+  for i in range(1, len(sheet_list)):
+    df_temporary = pd.read_excel(
         excel_sucio_ruta, 
-        sheet_name=lista_de_hojas[i],
-        skiprows=5
+        sheet_name= sheet_list[i],
+        skiprows= 5
     )
-    df_provisional['SHEET'] = lista_de_hojas[i]
-    df_limpio = df_limpio.append(df_provisional)
+    df_temporary['SHEET'] = sheet_list[i]
+    df_ordered = df_ordered.append(df_temporary)
+
+  df_ordered = df_ordered.dropna(how='any')
+
+  return df_ordered
 
 
-  df_limpio = df_limpio.dropna(how='any')
-
-  return df_limpio
-
+def merge_csv_files():
+  pass
 
 
+
+@tiempo_de_ejecucion
 def run():
 
   cities = list(config()['municipios'].keys())
 
-  path_base = pathlib.Path('./archivos-monterrey/years/')
-  years_folders = [año.name for año in path_base.iterdir() if año.is_dir()] 
+  for city in cities:
+    path_base = pathlib.Path(f'./archivos-{city}/years/')
+    years_folders = [año.name for año in path_base.iterdir() if año.is_dir()] 
     
-  for year in years_folders:
-    year_path = (f'{path_base}/{year}/archivos')
+    for year in years_folders:
+      year_path = (f'{path_base}/{year}/archivos')
 
-    files_xlsx = os.listdir(year_path)
+      files_xlsx = os.listdir(year_path)
+          
+      for i in files_xlsx:
+        excel_path = (year_path+'/'+i)
+
+        my_df = clean_excel_files(excel_sucio_ruta= excel_path)
+        my_df.to_csv(year_path+'/'+i+'.csv', index=False)
         
-    for i in files_xlsx:
-      excel_path = (year_path+'/'+i)
-
-      my_df = limpia_archivos_excel(
-        excel_sucio_ruta= excel_path
-      )
-      my_df.to_csv(year_path+'/'+i+'.csv', index=False)
-      
-      if os.path.isfile(path=excel_path):
-        os.remove(path=excel_path)
+        if os.path.isfile(path=excel_path):
+          os.remove(path=excel_path)
 
 
 
