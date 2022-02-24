@@ -44,22 +44,28 @@ def run():
   cities = list(config()['municipios'].keys())
 
   for city in cities:
-    path_base = pathlib.Path(f'./archivos-{city}/years/')
-    years_folders = [año.name for año in path_base.iterdir() if año.is_dir()] 
     
-    for year in years_folders:
-      year_path = (f'{path_base}/{year}/archivos')
+    CURRENT_DIR = pathlib.Path().resolve()
 
-      files_xlsx = os.listdir(year_path)
-          
-      for i in files_xlsx:
-        excel_path = (year_path+'/'+i)
+    BASE_PATH = CURRENT_DIR.joinpath(f"archivos-{city}", "years")
+    years_folder = [año.name for año in BASE_PATH.iterdir() if año.is_dir()]
 
-        my_df = clean_excel_files(excel_sucio_ruta= excel_path)
-        my_df.to_csv(year_path+'/'+i+'.csv', index=False)
-        
-        if os.path.isfile(path=excel_path):
-          os.remove(path=excel_path)
+    
+    for year in years_folder:
+        YEAR_FILES_PATH = BASE_PATH.joinpath(str(year), "archivos")
+
+        xlsx_files = [file.name for file in YEAR_FILES_PATH.iterdir() if file.is_file()]
+        PATH_XLSX_FILES = [file for file in YEAR_FILES_PATH.iterdir() if file.is_file()]
+
+        for file,path_file in zip(xlsx_files, PATH_XLSX_FILES):
+
+            my_df = clean_excel_files(excel_sucio_ruta=path_file)
+            my_df.to_csv(
+              str(YEAR_FILES_PATH)+str(f'/{file}.csv'), index=False
+            )
+            
+            if path_file.exists():
+              path_file.unlink()
 
 
 
